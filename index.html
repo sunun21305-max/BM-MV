@@ -136,8 +136,20 @@
         .hero .hero-bg {
             position: absolute;
             inset: 0;
-            background: url('group-photo.png') center center / cover no-repeat;
+            background: url('mv-poster.png') center center / cover no-repeat;
             opacity: 0.5;
+        }
+        .hero video {
+            position: absolute;
+            top: 50%; left: 50%;
+            min-width: 100%; min-height: 100%;
+            width: auto; height: auto;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+            opacity: 0.5;
+        }
+        @media (max-width: 768px) {
+            .hero video { display: none; }
         }
         .hero .overlay {
             position: absolute;
@@ -843,6 +855,9 @@
 
 <!-- Hero Section -->
 <section class="hero">
+    <video muted loop playsinline poster="group-photo.png" id="heroVideo">
+        <source src="BM-MV-4.mp4" type="video/mp4">
+    </video>
     <div class="hero-bg"></div>
     <div class="overlay"></div>
     <div class="hero-content">
@@ -1138,6 +1153,16 @@
             document.getElementById('lightbox').classList.remove('active');
         }
     });
+
+    // Remove hero video on mobile to prevent 39MB download
+    if (window.innerWidth < 768) {
+        const heroVideo = document.querySelector('.hero video');
+        if (heroVideo) heroVideo.remove();
+    } else {
+        // Desktop: autoplay hero video
+        const heroVideo = document.querySelector('.hero video');
+        if (heroVideo) heroVideo.play();
+    }
 
     // === Bubble Particles ===
     function createBubble() {
