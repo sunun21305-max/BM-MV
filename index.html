@@ -133,13 +133,10 @@
             overflow: hidden;
             margin-top: 0;
         }
-        .hero video {
+        .hero .hero-bg {
             position: absolute;
-            top: 50%; left: 50%;
-            min-width: 100%; min-height: 100%;
-            width: auto; height: auto;
-            transform: translate(-50%, -50%);
-            object-fit: cover;
+            inset: 0;
+            background: url('group-photo.png') center center / cover no-repeat;
             opacity: 0.5;
         }
         .hero .overlay {
@@ -846,9 +843,7 @@
 
 <!-- Hero Section -->
 <section class="hero">
-    <video autoplay muted loop playsinline poster="group-photo.png" preload="none" id="heroVideo">
-        <source src="BM-MV-4.mp4" type="video/mp4">
-    </video>
+    <div class="hero-bg"></div>
     <div class="overlay"></div>
     <div class="hero-content">
         <div class="tag">YG ENTERTAINMENT · 2024</div>
