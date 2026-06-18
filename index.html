@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BABYMONSTER - 怪物新人</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Orbitron:wght@400;700;900&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #050d05;
+            --bg-secondary: #081408;
+            --bg-card: #0a1a0a;
+            --neon: #39ff14;
+            --neon-dim: #1a7a0a;
+            --neon-glow: rgba(57, 255, 20, 0.15);
+            --neon-glow-strong: rgba(57, 255, 20, 0.4);
+            --gold: #c9a84c;
+            --gold-light: #e8d48b;
+            --gold-dark: #8a7030;
+            --silver: #a8b4a8;
+            --text: #e0f0e0;
+            --text-dim: #708870;
+            --text-bright: #d0ffd0;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text);
+            overflow-x: hidden;
+            line-height: 1.7;
+            cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='30' viewBox='0 0 24 30'%3E%3Cpath d='M2 2L17 22L13.5 23.5L16 28L14 29L11.5 24.5L8 26L2 2Z' fill='%2339ff14' opacity='0.9'/%3E%3Cpath d='M2 2L17 22L13.5 23.5L16 28L14 29L11.5 24.5L8 26L2 2Z' fill='none' stroke='%2339ff14' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E") 2 2, auto;
+        }
+        a, button, .gallery-item, .member-card, .hero-btn, .music-btn, .close, nav .nav-links a, input, select, textarea, label, img, video {
+            cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='30' viewBox='0 0 24 30'%3E%3Cpath d='M2 2L17 22L13.5 23.5L16 28L14 29L11.5 24.5L8 26L2 2Z' fill='%2339ff14' opacity='0.9'/%3E%3Cpath d='M2 2L17 22L13.5 23.5L16 28L14 29L11.5 24.5L8 26L2 2Z' fill='none' stroke='%2339ff14' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E") 2 2, pointer;
+        }
+
+        /* === Animated background === */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 800px 600px at 10% 20%, rgba(57,255,20,0.03) 0%, transparent 70%),
+                radial-gradient(ellipse 600px 800px at 90% 80%, rgba(57,255,20,0.02) 0%, transparent 70%),
+                radial-gradient(ellipse 400px 400px at 50% 50%, rgba(57,255,20,0.015) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* === Scrollbar === */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--neon), var(--neon-dim));
+            border-radius: 3px;
+            box-shadow: 0 0 8px var(--neon-glow);
+        }
+
+        /* === Navigation === */
+        nav {
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            background: linear-gradient(180deg, rgba(5,13,5,0.98), rgba(5,13,5,0.92));
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(57,255,20,0.08);
+            padding: 0 40px;
+            display: flex; align-items: center; justify-content: space-between;
+            height: 70px;
+            transition: all 0.3s;
+        }
+        nav .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 22px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 3px;
+            filter: drop-shadow(0 0 20px rgba(201,168,76,0.15));
+        }
+        nav .logo span {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-weight: 300;
+            font-size: 14px;
+            -webkit-text-fill-color: var(--text-dim);
+            margin-left: 8px;
+        }
+        nav .nav-links { display: flex; gap: 30px; list-style: none; }
+        nav .nav-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 400;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            position: relative;
+            padding: 4px 0;
+        }
+        nav .nav-links a::after {
+            content: '';
+            position: absolute; bottom: -2px; left: 0;
+            width: 0; height: 2px;
+            background: var(--neon);
+            box-shadow: 0 0 10px var(--neon-glow-strong);
+            transition: width 0.3s;
+        }
+        nav .nav-links a:hover { color: var(--neon); }
+        nav .nav-links a:hover::after { width: 100%; }
+
+        .menu-toggle {
+            display: none; flex-direction: column; gap: 5px; cursor: pointer;
+            background: none; border: none; padding: 5px;
+        }
+        .menu-toggle span {
+            width: 28px; height: 2px;
+            background: var(--gold);
+            transition: all 0.3s; display: block;
+        }
+
+        /* === Hero Section === */
+        .hero {
+            position: relative;
+            height: 100vh;
+            min-height: 700px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin-top: 0;
+        }
+        .hero video {
+            position: absolute;
+            top: 50%; left: 50%;
+            min-width: 100%; min-height: 100%;
+            width: auto; height: auto;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+            opacity: 0.5;
+        }
+        .hero .overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg,
+                rgba(5,13,5,0.88) 0%,
+                rgba(5,13,5,0.3) 40%,
+                rgba(5,13,5,0.5) 70%,
+                rgba(5,13,5,0.92) 100%);
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(57,255,20,0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 50%, rgba(57,255,20,0.04) 0%, transparent 50%);
+            z-index: 1;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 0 20px;
+            max-width: 900px;
+        }
+        .hero-content .tag {
+            display: inline-block;
+            padding: 6px 20px;
+            border: 1px solid var(--neon);
+            border-radius: 30px;
+            font-size: 12px;
+            letter-spacing: 3px;
+            color: var(--neon);
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            box-shadow: 0 0 20px var(--neon-glow);
+            text-shadow: 0 0 10px var(--neon-glow-strong);
+        }
+        .hero-content h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 80px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff 0%, var(--neon) 40%, var(--gold-light) 70%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            letter-spacing: 8px;
+            filter: drop-shadow(0 0 60px rgba(57,255,20,0.25));
+        }
+        .hero-content .sub {
+            font-size: 24px;
+            font-weight: 300;
+            color: var(--text-bright);
+            letter-spacing: 6px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(57,255,20,0.15);
+        }
+        .hero-content p {
+            font-size: 16px;
+            color: var(--text-dim);
+            max-width: 600px;
+            margin: 0 auto 40px;
+            line-height: 2;
+        }
+        .hero-btn {
+            display: inline-block;
+            padding: 16px 50px;
+            border: 1px solid var(--neon);
+            border-radius: 50px;
+            background: linear-gradient(135deg, rgba(57,255,20,0.08), rgba(57,255,20,0.02));
+            color: var(--neon);
+            text-decoration: none;
+            font-size: 15px;
+            letter-spacing: 3px;
+            transition: all 0.4s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            text-shadow: 0 0 10px rgba(57,255,20,0.3);
+        }
+        .hero-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(57,255,20,0.12), transparent);
+            transition: left 0.6s;
+        }
+        .hero-btn:hover::before { left: 100%; }
+        .hero-btn:hover {
+            background: linear-gradient(135deg, rgba(57,255,20,0.15), rgba(57,255,20,0.05));
+            box-shadow: 0 0 50px rgba(57,255,20,0.2), inset 0 0 30px rgba(57,255,20,0.05);
+            transform: translateY(-2px);
+        }
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-dim);
+            font-size: 11px;
+            letter-spacing: 2px;
+        }
+        .scroll-indicator .mouse {
+            width: 24px; height: 38px;
+            border: 2px solid var(--text-dim);
+            border-radius: 12px;
+            position: relative;
+        }
+        .scroll-indicator .mouse::after {
+            content: '';
+            position: absolute;
+            top: 6px; left: 50%;
+            transform: translateX(-50%);
+            width: 3px; height: 8px;
+            background: var(--neon);
+            border-radius: 2px;
+            box-shadow: 0 0 8px var(--neon-glow-strong);
+            animation: scrollWheel 2s infinite;
+        }
+        @keyframes scrollWheel {
+            0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(12px); }
+        }
+
+        /* === Section Common === */
+        section {
+            padding: 100px 40px;
+            position: relative;
+        }
+        .section-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .section-tag {
+            display: inline-block;
+            font-size: 12px;
+            letter-spacing: 4px;
+            color: var(--neon);
+            margin-bottom: 10px;
+            font-weight: 500;
+            text-shadow: 0 0 20px rgba(57,255,20,0.2);
+        }
+        .section-title {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+        .section-title .highlight {
+            background: linear-gradient(135deg, var(--neon), var(--gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .section-desc {
+            color: var(--text-dim);
+            font-size: 16px;
+            max-width: 700px;
+            line-height: 2;
+        }
+        .section-divider {
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--neon), transparent);
+            margin: 15px 0 25px;
+            box-shadow: 0 0 15px rgba(57,255,20,0.2);
+        }
+
+        /* === About Section === */
+        #about {
+            background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            position: relative;
+        }
+        #about::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neon), transparent);
+        }
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            margin-top: 40px;
+        }
+        .about-text p {
+            color: var(--text-dim);
+            margin-bottom: 20px;
+            font-size: 15px;
+            line-height: 2;
+        }
+        .about-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+        }
+        .about-stat {
+            text-align: center;
+            padding: 30px 20px;
+            border: 1px solid rgba(57,255,20,0.08);
+            border-radius: 12px;
+            background: rgba(5,13,5,0.5);
+            transition: all 0.3s;
+        }
+        .about-stat:hover {
+            border-color: rgba(57,255,20,0.25);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3), 0 0 30px rgba(57,255,20,0.05);
+        }
+        .about-stat .number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--neon), var(--gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .about-stat .label {
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-top: 8px;
+        }
+        .about-image {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(57,255,20,0.12);
+            box-shadow: 0 0 40px rgba(57,255,20,0.04);
+        }
+        .about-image img {
+            width: 100%;
+            display: block;
+            transition: transform 0.6s;
+        }
+        .about-image:hover img { transform: scale(1.03); }
+        .about-image::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(5,13,5,0.3), transparent);
+            pointer-events: none;
+        }
+
+        /* === Members Section === */
+        #members {
+            background: var(--bg-primary);
+        }
+        .members-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+        .member-card {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(57,255,20,0.06);
+            background: linear-gradient(180deg, rgba(10,26,10,0.4), rgba(5,13,5,0.9));
+            transition: all 0.5s;
+            cursor: pointer;
+        }
+        .member-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(57,255,20,0.2);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(57,255,20,0.06);
+        }
+        .member-card .card-img {
+            width: 100%;
+            aspect-ratio: 3/4;
+            overflow: hidden;
+            position: relative;
+        }
+        .member-card .card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center center;
+            transition: transform 0.6s;
+        }
+        .member-card .card-img img.center-face {
+            object-position: 70% 50%;
+        }
+        .member-card .card-img img.zoom-in {
+            transform: scale(1.05);
+        }
+        .member-card:hover .card-img img.zoom-in {
+            transform: scale(1.13);
+        }
+
+        .member-card:hover .card-img img { transform: scale(1.08); }
+        .member-card .card-img::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 50%;
+            background: linear-gradient(transparent, rgba(5,13,5,0.95));
+        }
+        .member-card .card-body {
+            padding: 25px;
+            position: relative;
+        }
+        .member-card .card-body .member-name {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--neon);
+        }
+        .member-card .card-body .member-en {
+            font-size: 14px;
+            color: var(--neon);
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            text-shadow: 0 0 15px rgba(57,255,20,0.15);
+        }
+        .member-card .card-body .member-role {
+            font-size: 13px;
+            color: var(--neon);
+            margin-bottom: 12px;
+            opacity: 0.8;
+        }
+        .member-card .card-body .member-desc {
+            font-size: 13px;
+            color: var(--neon);
+            line-height: 1.8;
+            opacity: 0;
+            max-height: 0;
+            transition: all 0.4s;
+        }
+        .member-card.active .member-desc,
+        .member-card:hover .member-desc {
+            opacity: 0.7;
+            max-height: 200px;
+        }
+        .member-card .card-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 48px;
+            font-weight: 900;
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: rgba(57,255,20,0.15);
+            line-height: 1;
+            transition: all 0.4s;
+        }
+        .member-card:hover .card-number {
+            color: rgba(57,255,20,0.3);
+        }
+
+        /* === Video Section === */
+        #video {
+            background: linear-gradient(180deg, var(--bg-secondary), var(--bg-primary));
+        }
+        #video::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neon), transparent);
+        }
+        .video-wrapper {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(57,255,20,0.12);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 60px rgba(57,255,20,0.04);
+            margin-top: 40px;
+            background: #000;
+        }
+        .video-wrapper video {
+            width: 100%;
+            display: block;
+        }
+
+        /* === Gallery Section === */
+        #gallery {
+            background: var(--bg-primary);
+        }
+        #gallery::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neon), transparent);
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+        .gallery-item {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(57,255,20,0.06);
+            position: relative;
+            cursor: pointer;
+            background: var(--bg-card);
+            aspect-ratio: 4/3;
+            transition: all 0.3s;
+        }
+        .gallery-item:hover {
+            border-color: rgba(57,255,20,0.2);
+            box-shadow: 0 0 30px rgba(57,255,20,0.06);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.5s;
+        }
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+        .gallery-item .gallery-label {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            padding: 40px 20px 16px;
+            background: linear-gradient(transparent, rgba(5,13,5,0.95));
+            font-size: 13px;
+            color: var(--neon);
+            letter-spacing: 1px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            text-shadow: 0 0 10px rgba(57,255,20,0.2);
+        }
+        .gallery-item:hover .gallery-label { opacity: 1; }
+
+        /* === Footer === */
+        footer {
+            background: linear-gradient(180deg, var(--bg-primary), #020802);
+            border-top: 1px solid rgba(57,255,20,0.06);
+            padding: 60px 40px 30px;
+            text-align: center;
+        }
+        footer .footer-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--neon), var(--gold-light), var(--gold-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 0 30px rgba(57,255,20,0.12));
+        }
+        footer p {
+            color: var(--text-dim);
+            font-size: 13px;
+            letter-spacing: 2px;
+        }
+        footer .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 25px 0;
+        }
+        footer .social-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 13px;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            padding: 8px 16px;
+            border: 1px solid rgba(57,255,20,0.08);
+            border-radius: 30px;
+        }
+        footer .social-links a:hover {
+            color: var(--neon);
+            border-color: rgba(57,255,20,0.25);
+            box-shadow: 0 0 20px rgba(57,255,20,0.08);
+        }
+        footer .copyright {
+            font-size: 12px;
+            color: rgba(112,136,112,0.4);
+            margin-top: 20px;
+        }
+
+        /* === Lightbox === */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+        .lightbox.active { display: flex; }
+        .lightbox img {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+        .lightbox .close {
+            position: absolute;
+            top: 20px; right: 30px;
+            font-size: 40px;
+            color: var(--text-dim);
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .lightbox .close:hover { color: var(--gold); }
+
+        /* === Responsive === */
+        @media (max-width: 968px) {
+            nav { padding: 0 20px; }
+            nav .nav-links { gap: 20px; }
+            nav .nav-links a { font-size: 12px; }
+            .hero-content h1 { font-size: 50px; letter-spacing: 4px; }
+            .hero-content .sub { font-size: 18px; }
+            .about-grid { grid-template-columns: 1fr; gap: 40px; }
+            .about-stats { gap: 15px; }
+            .about-stat { padding: 20px 15px; }
+            .about-stat .number { font-size: 28px; }
+            section { padding: 70px 20px; }
+            .section-title { font-size: 32px; }
+            .members-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+            .gallery-grid { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+        }
+        @media (max-width: 600px) {
+            .menu-toggle { display: flex; }
+            nav .nav-links {
+                display: none;
+                position: absolute;
+                top: 70px; left: 0; right: 0;
+                flex-direction: column;
+                background: rgba(10,26,10,0.98);
+                padding: 20px;
+                gap: 15px;
+                border-bottom: 1px solid rgba(201,168,76,0.15);
+            }
+            nav .nav-links.open { display: flex; }
+            .hero-content h1 { font-size: 36px; }
+            .hero-content .sub { font-size: 14px; letter-spacing: 3px; }
+            .hero-btn { padding: 14px 30px; font-size: 13px; }
+            .members-grid { grid-template-columns: 1fr 1fr; gap: 15px; }
+            .member-card .card-body { padding: 15px; }
+            .member-card .card-body .member-name { font-size: 18px; }
+            .gallery-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .about-stats { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+            section { padding: 50px 15px; }
+            .section-title { font-size: 26px; }
+        }
+
+        /* === Animations === */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* === Decorative Elements === */
+        .metallic-line {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(201,168,76,0.3), rgba(201,168,76,0.6), rgba(201,168,76,0.3), transparent);
+            margin: 0;
+        }
+
+        /* === Video Controls Hint === */
+        .video-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.4);
+            font-size: 12px;
+            letter-spacing: 1px;
+            pointer-events: none;
+        }
+
+        /* === Bubble Particles === */
+        #bubble-container {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 999;
+            overflow: hidden;
+        }
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(57,255,20,0.4), rgba(57,255,20,0.05));
+            border: 1px solid rgba(57,255,20,0.2);
+            box-shadow: 0 0 15px rgba(57,255,20,0.1), inset 0 0 15px rgba(57,255,20,0.05);
+            pointer-events: none;
+            animation: bubbleFloat linear infinite;
+        }
+        @keyframes bubbleFloat {
+            0% {
+                transform: translateY(0) translateX(0) scale(1);
+                opacity: 0.6;
+            }
+            50% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(var(--drift)) scale(0.3);
+                opacity: 0;
+            }
+        }
+
+        /* === Music Button === */
+        .music-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1001;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 1px solid rgba(57,255,20,0.3);
+            background: rgba(5,13,5,0.85);
+            backdrop-filter: blur(10px);
+            color: var(--neon);
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(57,255,20,0.1);
+        }
+        .music-btn:hover {
+            border-color: var(--neon);
+            box-shadow: 0 0 30px rgba(57,255,20,0.2);
+            transform: scale(1.1);
+        }
+        .music-btn.playing {
+            animation: musicPulse 2s ease-in-out infinite;
+        }
+        @keyframes musicPulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(57,255,20,0.1); }
+            50% { box-shadow: 0 0 40px rgba(57,255,20,0.25); }
+        }
+        .music-btn .note-icon {
+            position: absolute;
+            font-size: 10px;
+            opacity: 0;
+            transition: all 0.5s;
+        }
+        .music-btn.playing .note-icon {
+            animation: noteFloat 1.5s ease-out forwards;
+        }
+        @keyframes noteFloat {
+            0% { opacity: 1; transform: translateY(0) rotate(0deg); }
+            100% { opacity: 0; transform: translateY(-30px) rotate(20deg); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Bubble Container -->
+<div id="bubble-container"></div>
+
+<!-- Music Button -->
+<button class="music-btn" id="musicBtn" onclick="toggleMusic()">
+    ♪
+    <span class="note-icon">♫</span>
+</button>
+
+<!-- Audio -->
+<audio id="bgMusic" loop preload="auto">
+    <source src="秋日温暖回忆-抒情钢琴-怀旧叙事_爱给网_aigei_com.mp3" type="audio/mpeg">
+</audio>
+
+<!-- Navigation -->
+<nav>
+    <div class="logo">BABYMONSTER <span>· 怪物新人</span></div>
+    <button class="menu-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">
+        <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links">
+        <li><a href="#about">关于</a></li>
+        <li><a href="#members">成员</a></li>
+        <li><a href="#video">MV</a></li>
+        <li><a href="#gallery">分镜画廊</a></li>
+    </ul>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero">
+    <video autoplay muted loop playsinline poster="Image (8).png">
+        <source src="BM-MV-4.mp4" type="video/mp4">
+    </video>
+    <div class="overlay"></div>
+    <div class="hero-content">
+        <div class="tag">YG ENTERTAINMENT · 2024</div>
+        <h1>BABYMONSTER</h1>
+        <div class="sub">괴물 신인 · 怪物新人</div>
+        <p>YG娱乐时隔七年推出的全新女子组合，七位才华横溢的少女以碾压级的实力和独特的音乐风格，在全球K-pop舞台掀起风暴。</p>
+        <a href="#about" class="hero-btn">探索更多</a>
+    </div>
+    <div class="scroll-indicator">
+        <div class="mouse"></div>
+        <span>向下滚动</span>
+    </div>
+</section>
+
+<!-- About Section -->
+<section id="about">
+    <div class="section-container">
+        <div class="fade-in">
+            <span class="section-tag">✦ INTRODUCTION</span>
+            <h2 class="section-title">关于 <span class="highlight">BABYMONSTER</span></h2>
+            <div class="section-divider"></div>
+        </div>
+        <div class="about-grid">
+            <div class="about-text fade-in">
+                <p><strong>BABYMONSTER</strong>（韩语：<strong>베이비몬스터</strong>）是韩国YG娱乐于2024年4月1日推出的七人女子组合，由三位韩国籍成员<strong>Ahyeon</strong>、<strong>Rami</strong>、<strong>Rora</strong>，两位日本籍成员<strong>Ruka</strong>、<strong>Asa</strong>，以及两位泰国籍成员<strong>Pharita</strong>、<strong>Chiquita</strong>组成。</p>
+                <p>团名"BABYMONSTER"寓意"像怪物一样有着压倒性实力的新人"，承载着YG继2NE1和BLACKPINK之后再次引领全球女子组合潮流的雄心。她们在正式出道前就因超强的唱功、舞蹈和说唱实力而备受瞩目，被媒体和粉丝誉为"怪物新人"。</p>
+                <p>2024年4月1日，BABYMONSTER以迷你专辑《<strong>BABYMONS7ER</strong>》正式出道，主打歌《<strong>SHEESH</strong>》以其强烈的能量和高难度的编舞迅速席卷全球音乐榜单，展现了她们无愧于"怪物新人"之名的超群实力。</p>
+                <div class="about-stats">
+                    <div class="about-stat">
+                        <div class="number">2024</div>
+                        <div class="label">正式出道</div>
+                    </div>
+                    <div class="about-stat">
+                        <div class="number">7</div>
+                        <div class="label">名成员</div>
+                    </div>
+                    <div class="about-stat">
+                        <div class="number">3</div>
+                        <div class="label">个国家</div>
+                    </div>
+                </div>
+            </div>
+            <div class="about-image fade-in">
+                <img src="Image (12).png" alt="BABYMONSTER Group">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Members Section -->
+<section id="members">
+    <div class="section-container">
+        <div class="fade-in">
+            <span class="section-tag">✦ MEMBERS</span>
+            <h2 class="section-title">成员 <span class="highlight">介绍</span></h2>
+            <div class="section-divider"></div>
+            <p class="section-desc">来自韩国、日本、泰国的七名成员，每位成员都拥有独特的魅力和不可替代的实力。</p>
+        </div>
+        <div class="members-grid">
+
+            <!-- Ruka -->
+            <div class="member-card fade-in">
+                <div class="card-img">
+                    <img src="ruka.png" alt="Ruka">
+                </div>
+                <div class="card-body">
+                    <span class="card-number">01</span>
+                    <div class="member-name">Ruka</div>
+                    <div class="member-en">루카</div>
+                    <div class="member-role">🏆 主Rapper · 主舞 · 2002.03.20 · 日本大阪</div>
+                    <div class="member-desc">BABYMONSTER的大姐和队长担当，拥有压倒性的舞台气场和深厚的舞蹈功底。作为队内主Rapper，她的说唱flow极具辨识度，低沉有力的嗓音配合犀利的台风，是团队的核心力量。练习生时期就备受瞩目，是YG的宝藏练习生。</div>
+                </div>
+            </div>
+
+            <!-- Pharita -->
+            <div class="member-card fade-in">
+                <div class="card-img">
+                    <img src="pharita.png" alt="Pharita">
+                </div>
+                <div class="card-body">
+                    <span class="card-number">02</span>
+                    <div class="member-name">Pharita</div>
+                    <div class="member-en">파리타</div>
+                    <div class="member-role">🎤 主唱 · 2005.08.26 · 泰国曼谷</div>
+                    <div class="member-desc">拥有如同天籁般的清亮嗓音，Pharita是队内的主唱担当。她的高音清澈而富有穿透力，能够轻松驾驭各种风格的歌曲。甜美的外表下蕴藏着惊人的爆发力，台上台下的反转魅力让人无法抗拒。精通泰语、韩语和英语。</div>
+                </div>
+            </div>
+
+            <!-- Asa -->
+            <div class="member-card fade-in">
+                <div class="card-img">
+                    <img src="ASA-分镜.png" alt="Asa">
+                </div>
+                <div class="card-body">
+                    <span class="card-number">03</span>
+                    <div class="member-name">Asa</div>
+                    <div class="member-en">아사</div>
+                    <div class="member-role">🎤 主Rapper · 主舞 · 2006.04.17 · 日本东京</div>
+                    <div class="member-desc">Asa是队内与Ruka并驾齐驱的Rapper兼舞蹈担当，拥有极强的节奏感和音乐理解力。她的说唱风格现代而多变，舞蹈线条干净利落，编舞能力也非常出众。在生存赛中就凭借自编舞蹈和原创Rap技惊四座。</div>
+                </div>
+            </div>
+
+            <!-- Ahyeon -->
+            <div class="member-card fade-in">
+                <div class="card-img">
+                    <img src="镜头-1郑雅娴.png" alt="Ahyeon">
+                </div>
+                <div class="card-body">
+                    <span class="card-number">04</span>
+                    <div class="member-name">Ahyeon</div>
+                    <div class="member-en">정아현</div>
+                    <div class="member-role">🌟 中心 · 主唱 · 2007.04.11 · 韩国首尔</div>
+                    <div class="member-desc">Ahyeon是队内的王牌选手，出道前就以翻唱视频在全球获得数千万播放量。她拥有极其罕见的全能型实力——惊人的高音、稳定的低音、出色的舞蹈和说唱能力兼备。被誉为"新一代K-pop全能ace"，是团队的核心成员。</div>
+                </div>
+            </div>
+
+            <!-- Rami -->
+            <div class="member-card fade-in">
+                <div class="card-img">
+                    <img src="Image (4).png" alt="Rami" class="center-face">
+                </div>
+                <div class="card-body">
+                    <span class="card-number">05</span>
+                    <div class="member-name">Rami</div>
+                    <div class="member-en">라미</div>
+                    <div class="member-role">🎵 主唱 · 2007.10.17 · 韩国首尔</div>
+                    <div class="member-desc">Rami拥有极具辨识度的醇厚嗓音，她的音色温暖而富有情感张力，在歌曲中常常担任重要的情感传递角色。作为主唱之一，她的演唱技巧扎实稳定，现场LIVE能力极强，是团队音乐表现力的重要支柱。</div>
+                </div>
+            </div>
+
+            <!-- Rora -->
+            <div class="member-card fade-in">
+                <div class="card-img">
+                    <img src="Image (7).png" alt="Rora" class="zoom-in">
+                </div>
+                <div class="card-body">
+                    <span class="card-number">06</span>
+                    <div class="member-name">Rora</div>
+                    <div class="member-en">로라</div>
+                    <div class="member-role">🎶 领唱 · 2008.08.14 · 韩国首尔</div>
+                    <div class="member-desc">Rora是队内的小可爱，拥有甜美清新的少女嗓音和精致的舞台表现力。虽然是队内的忙内line，但她的演唱实力丝毫不逊色于姐姐们。清新灵动的气质让她在舞台上格外亮眼，是团队中不可或缺的甜美担当。</div>
+                </div>
+            </div>
+
+            <!-- Chiquita -->
+            <div class="member-card fade-in">
+                <div class="card-img">
+                    <img src="Image (5).png" alt="Chiquita">
+                </div>
+                <div class="card-body">
+                    <span class="card-number">07</span>
+                    <div class="member-name">Chiquita</div>
+                    <div class="member-en">치키타</div>
+                    <div class="member-role">💫 领舞 · 副唱 · 2009.10.01 · 泰国曼谷</div>
+                    <div class="member-desc">Chiquita是BABYMONSTER的忙内（老幺），年纪虽小却拥有不输姐姐们的超强舞蹈实力。她的舞蹈充满力量感和节奏感，在舞台上展现出超越年龄的成熟表现力。作为领舞，她的动作精准而富有感染力，未来可期。</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Video Section -->
+<section id="video">
+    <div class="section-container">
+        <div class="fade-in">
+            <span class="section-tag">✦ MUSIC VIDEO</span>
+            <h2 class="section-title">精彩 <span class="highlight">MV</span></h2>
+            <div class="section-divider"></div>
+            <p class="section-desc">感受BABYMONSTER无与伦比的音乐魅力和视觉震撼。</p>
+        </div>
+        <div class="video-wrapper fade-in">
+            <video controls playsinline poster="Image (9).png">
+                <source src="BM-MV-4.mp4" type="video/mp4">
+                您的浏览器不支持视频播放，请更换浏览器后重试。
+            </video>
+        </div>
+    </div>
+</section>
+
+<!-- Gallery Section -->
+<section id="gallery">
+    <div class="section-container">
+        <div class="fade-in">
+            <span class="section-tag">✦ STORYBOARD</span>
+            <h2 class="section-title">MV分镜头 <span class="highlight">画廊</span></h2>
+            <div class="section-divider"></div>
+            <p class="section-desc">MV制作过程中的精美分镜头设计，每一帧都是艺术。</p>
+        </div>
+        <div class="gallery-grid fade-in">
+            <div class="gallery-item" onclick="openLightbox(this.querySelector('img').src)">
+                <img src="ASA-分镜.png" alt="ASA Storyboard 1">
+                <div class="gallery-label">Asa Storyboard</div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox(this.querySelector('img').src)">
+                <img src="镜头-1郑雅娴.png" alt="Ahyeon Storyboard">
+                <div class="gallery-label">Ahyeon Storyboard</div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox(this.querySelector('img').src)">
+                <img src="Image (4).png" alt="Storyboard 4">
+                <div class="gallery-label">Rami Storyboard</div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox(this.querySelector('img').src)">
+                <img src="Image (5).png" alt="Storyboard 5">
+                <div class="gallery-label">Chiquita Storyboard</div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox(this.querySelector('img').src)">
+                <img src="Image (7).png" alt="Storyboard 7">
+                <div class="gallery-label">Rora Storyboard</div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox(this.querySelector('img').src)">
+                <img src="Image (8).png" alt="Pharita & Ruka">
+                <div class="gallery-label">Pharita & Ruka Storyboard</div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox(this.querySelector('img').src)">
+                <img src="Image (9).png" alt="MV Opening Storyboard">
+                <div class="gallery-label">MV Opening Storyboard</div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox(this.querySelector('img').src)">
+                <img src="ruka.png" alt="Ruka">
+                <div class="gallery-label">Ruka Storyboard</div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox(this.querySelector('img').src)">
+                <img src="pharita.png" alt="Pharita">
+                <div class="gallery-label">Pharita Storyboard</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="this.classList.remove('active')">
+    <button class="close" onclick="document.getElementById('lightbox').classList.remove('active')">&times;</button>
+    <img id="lightbox-img" src="" alt="">
+</div>
+
+<!-- Footer -->
+<footer>
+    <div class="footer-logo">BABYMONSTER</div>
+    <p>괴물 신인 · 怪物新人</p>
+    <div class="social-links">
+        <a href="https://www.youtube.com/@BABYMONSTER" target="_blank">YouTube</a>
+        <a href="https://www.instagram.com/babymonster_ygofficial/" target="_blank">Instagram</a>
+        <a href="https://twitter.com/YGBABYMONSTER_" target="_blank">Twitter</a>
+        <a href="https://www.tiktok.com/@babymonster_yg" target="_blank">TikTok</a>
+    </div>
+    <p class="copyright">© 2024-2026 BABYMONSTER Fan Site. All rights reserved. 本网站为粉丝制作，非官方站点。</p>
+</footer>
+
+<!-- Scripts -->
+<script>
+    // Lightbox
+    function openLightbox(src) {
+        document.getElementById('lightbox-img').src = src;
+        document.getElementById('lightbox').classList.add('active');
+    }
+
+    // Intersection Observer for fade-in
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // Navbar scroll effect
+    let lastScroll = 0;
+    window.addEventListener('scroll', () => {
+        const nav = document.querySelector('nav');
+        const current = window.scrollY;
+        if (current > 100) {
+            nav.style.background = 'linear-gradient(180deg, rgba(5,13,5,0.99), rgba(5,13,5,0.95))';
+        } else {
+            nav.style.background = 'linear-gradient(180deg, rgba(5,13,5,0.98), rgba(5,13,5,0.92))';
+        }
+        lastScroll = current;
+    });
+
+    // Close mobile nav on link click
+    document.querySelectorAll('.nav-links a').forEach(a => {
+        a.addEventListener('click', () => {
+            document.querySelector('.nav-links').classList.remove('open');
+        });
+    });
+
+    // Keyboard shortcut for lightbox
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            document.getElementById('lightbox').classList.remove('active');
+        }
+    });
+
+    // === Bubble Particles ===
+    function createBubble() {
+        const container = document.getElementById('bubble-container');
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        const size = Math.random() * 60 + 15;
+        const x = Math.random() * 100;
+        const drift = (Math.random() - 0.5) * 200;
+        const duration = Math.random() * 15 + 10;
+        bubble.style.width = size + 'px';
+        bubble.style.height = size + 'px';
+        bubble.style.left = x + '%';
+        bubble.style.bottom = '-10%';
+        bubble.style.setProperty('--drift', drift + 'px');
+        bubble.style.animationDuration = duration + 's';
+        bubble.style.animationDelay = Math.random() * 5 + 's';
+        container.appendChild(bubble);
+        setTimeout(() => bubble.remove(), (duration + 5) * 1000);
+    }
+
+    function spawnBubblesNearMouse(e) {
+        for (let i = 0; i < 3; i++) {
+            const container = document.getElementById('bubble-container');
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            const size = Math.random() * 25 + 8;
+            const drift = (Math.random() - 0.5) * 100;
+            const duration = Math.random() * 8 + 5;
+            bubble.style.width = size + 'px';
+            bubble.style.height = size + 'px';
+            bubble.style.left = (e.clientX + (Math.random() - 0.5) * 60) + 'px';
+            bubble.style.top = (e.clientY + (Math.random() - 0.5) * 60) + 'px';
+            bubble.style.setProperty('--drift', drift + 'px');
+            bubble.style.animationDuration = duration + 's';
+            bubble.style.opacity = '0.7';
+            container.appendChild(bubble);
+            setTimeout(() => bubble.remove(), (duration + 2) * 1000);
+        }
+    }
+
+    // Auto-spawn bubbles periodically
+    setInterval(() => createBubble(), 2000);
+
+    // Mouse-follow bubbles
+    let mouseThrottle = 0;
+    document.addEventListener('mousemove', (e) => {
+        const now = Date.now();
+        if (now - mouseThrottle > 150) {
+            mouseThrottle = now;
+            spawnBubblesNearMouse(e);
+        }
+    });
+
+    // === Background Music ===
+    const audio = document.getElementById('bgMusic');
+    audio.volume = 0.8; // reduced by 20%
+
+    function toggleMusic() {
+        const btn = document.getElementById('musicBtn');
+        if (audio.paused) {
+            audio.play().then(() => {
+                btn.classList.add('playing');
+                btn.innerHTML = '♫<span class="note-icon">♪</span>';
+            }).catch(() => {
+                btn.innerHTML = '♪<span class="note-icon">♫</span>';
+            });
+        } else {
+            audio.pause();
+            btn.classList.remove('playing');
+            btn.innerHTML = '♪<span class="note-icon">♫</span>';
+        }
+    }
+
+    // Auto-play on first user interaction
+    let firstInteraction = true;
+    document.addEventListener('click', () => {
+        if (firstInteraction && audio.paused) {
+            firstInteraction = false;
+            audio.play().then(() => {
+                document.getElementById('musicBtn').classList.add('playing');
+                document.getElementById('musicBtn').innerHTML = '♫<span class="note-icon">♪</span>';
+            }).catch(() => {});
+        }
+    }, { once: true });
+
+    // === MV Video Music Conflict ===
+    const mvVideo = document.querySelector('#video video');
+    if (mvVideo) {
+        mvVideo.addEventListener('play', () => {
+            if (!audio.paused) {
+                audio.pause();
+                document.getElementById('musicBtn').classList.remove('playing');
+                document.getElementById('musicBtn').innerHTML = '♪<span class="note-icon">♫</span>';
+            }
+        });
+        mvVideo.addEventListener('pause', () => {
+            // Re-enable the music button to let user manually resume
+            document.getElementById('musicBtn').innerHTML = '♪<span class="note-icon">♫</span>';
+        });
+        mvVideo.addEventListener('ended', () => {
+            document.getElementById('musicBtn').innerHTML = '♪<span class="note-icon">♫</span>';
+        });
+    }
+</script>
+
+</body>
+</html>
